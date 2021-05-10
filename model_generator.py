@@ -35,6 +35,36 @@ class ModelGenerator:
         print(score)
         return model
 
+    def build_random_forest_regression_model(self, target):
+        # Divide financials into target and predictors
+        X = self.financials.drop([target], axis=1)
+        y = self.financials[target]
+        # Build model
+        rf = RandomForestRegressor(n_estimators=1000, random_state=42)
+        # Train the model on training data
+        rf.fit(X, y)
+        score = rf.score(X, y)
+        # rf_prediction = rf.predict(X)
+        print(score)
+        return rf
+
+    def build_mlp_model(self, target):
+        # Divide financials
+        X = self.financials.drop([target], axis=1)
+        y = self.financials[target]
+
+        # Для нейросети нужен Scaler для нормирования данных
+        scaler = StandardScaler()
+        scaler.fit(X)
+        X2 = scaler.transform(X)
+        #  Строим модель
+        mlp = MLPRegressor(random_state=None, hidden_layer_sizes=(100,),
+                           activation='relu', max_iter=1000, solver='lbfgs')
+        mlp.fit(X2, y)
+        mlp_score = mlp.score(X2, y)
+        #  mlp_prediction = mlp.predict(X2)
+        print(mlp_score)
+        return mlp
 
     def build_linear_regression_models_for_all_features(self):
         data = self.financials
@@ -44,7 +74,7 @@ class ModelGenerator:
             model = self.build_linear_regression_model(feature)
             models.append(model)
 
-    def predict(self, model: LinearRegression, X: pd.DataFrame, years: list):
+    def predict(self, model, X: pd.DataFrame, years: list):
         X2 = []  # Хранилище для таблиц Год - Признак
         models = []  # Список обученных линейных регрессионных моделей для каждого признака
         i = 0
@@ -63,14 +93,14 @@ class ModelGenerator:
         predictions = []  # Прогнозы по линейной модели
         # Список лет прогноза
         for year in years:
-            features = []
-            features.append(year)
+            features = [year]
             for m in models:
                 a = m.predict([[year]])
                 features.append(a)
-            # На основе спрогнозированных свойств на 2021 мы прогнозируем курс акций
+            # На основе спрогнозированных свойств мы прогнозируем курс акций
             prediction = model.predict([features])
-
             print(f'{year} - {prediction}')
             predictions.append(prediction)
+
+        return predictions
 
