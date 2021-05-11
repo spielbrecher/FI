@@ -1,5 +1,7 @@
 import company
 import model_generator
+from main_frame import MainFrame
+from tkinter import Tk, Frame, BOTH
 
 
 def main():
@@ -24,9 +26,9 @@ def main():
 
     modelgen.predict(model, fin, years)
 
-
-
-
+    root = Tk()
+    app = MainFrame(root)
+    root.mainloop()
 
 
 if __name__ == "__main__":
