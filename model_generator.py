@@ -92,15 +92,17 @@ class ModelGenerator:
         # и добавляем в список features
         predictions = []  # Прогнозы по линейной модели
         # Список лет прогноза
+        featuresList = []
         for year in years:
             features = [year]
             for m in models:
                 a = m.predict([[year]])
                 features.append(a)
             # На основе спрогнозированных свойств мы прогнозируем курс акций
+            featuresList.append(features)
             prediction = model.predict([features])
             print(f'{year} - {prediction}')
             predictions.append(prediction)
 
-        return predictions
+        return featuresList, predictions
 

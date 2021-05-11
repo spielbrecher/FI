@@ -1,5 +1,6 @@
 import pandas as pd
 import json
+from sklearn.linear_model import LinearRegression
 
 
 class Company:
@@ -10,6 +11,7 @@ class Company:
         self.financials = pd.DataFrame()
         self.financials_excel = ''  # Path to excel file
         self.models = []  # Прогностические модели. Список моделей для каждого показателя
+        self.price_model: LinearRegression
 
     def set_company_name(self, company_name):
         self.company_name = company_name
@@ -26,6 +28,9 @@ class Company:
     def set_models(self, models: pd.DataFrame):
         self.models = models
 
+    def set_price_model(self, model: LinearRegression):
+        self.price_model = model
+
     def add_model(self, model):
         self.models.append(model)
 
@@ -37,6 +42,9 @@ class Company:
 
     def get_financials(self):
         return self.financials
+
+    def get_price_model(self):
+        return self.price_model
 
     def load_financials_from_file(self):
         df = pd.read_excel(self.financials_excel)

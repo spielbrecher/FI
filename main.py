@@ -23,14 +23,14 @@ def main():
     years = [i for i in range(2021, 2026)]
     fin = mycompany.get_financials()
     fin = fin.drop(["Price"], axis=1)
-
     modelgen.predict(model, fin, years)
 
-    root = Tk()
-    app = MainFrame(root)
-    root.mainloop()
+    # root = Tk()
+    # app = MainFrame(root)
+    # root.mainloop()
 
 
 if __name__ == "__main__":
     # execute only if run as a script
-    main()
+    app = MainFrame()
+    app.mainloop()
