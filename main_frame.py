@@ -1,4 +1,4 @@
-from tkinter import Tk, RIGHT, BOTH, RAISED
+from tkinter import Tk, RIGHT, BOTH, RAISED, messagebox, Label, Entry, StringVar
 import tkinter
 from tkinter.ttk import Frame, Button, Style
 from pandastable import Table, TableModel
@@ -33,6 +33,15 @@ class MainFrame(Tk):
         self.modelButton.pack(side=RIGHT)
         self.prognosisButton = Button(self, text="Прогноз", command=self.prognosis)
         self.prognosisButton.pack(side=RIGHT)
+        self.l1 = Label(self, text='От')
+        self.l2 = Label(self, text='До')
+        self.entry_from = Entry(self, width=4, textvariable=StringVar(self, '2021'))
+        self.entry_to = Entry(self, width=4, textvariable=StringVar(self, '2026'))
+        self.entry_to.pack(side=RIGHT, padx=5)
+        self.l2.pack(side=RIGHT)
+        self.entry_from.pack(side=RIGHT, padx=5)
+        self.l1.pack(side=RIGHT)
+
 
     def initUI(self):
         self.title("Fluger Investor 1.00 2021")
@@ -70,18 +79,20 @@ class MainFrame(Tk):
     def createModel(self):
         modelgen = model_generator.ModelGenerator()
         modelgen.set_financials(self.mycompany.get_financials())
-        model = modelgen.build_linear_regression_model('Price')
+        model, score = modelgen.build_linear_regression_model('Price')
         self.mycompany.set_price_model(model)
+        messagebox.showinfo("Модель", "Модель создана, score = "+str(score))
 
     def prognosis(self):
-        years = [i for i in range(2021, 2026)]
+        f = self.entry_from.get()
+        t = self.entry_to.get()
+        years = [i for i in range(int(f), int(t))]
         fin = self.mycompany.get_financials()
         fin = fin.drop(["Price"], axis=1)
         modelgen = model_generator.ModelGenerator()
         features, predictions = modelgen.predict(self.mycompany.get_price_model(), fin, years)
         print(features)
-
-        wPrognosis = prognosis_frame.PrognosisFrame(self, predictions, years).mainloop()
+        prognosis_frame.PrognosisFrame(self, predictions, years)
 
 
 

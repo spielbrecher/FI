@@ -32,8 +32,7 @@ class ModelGenerator:
         # Score model
         score = model.score(X, y)
         # prediction = model.predict(X) - for prediction
-        print(score)
-        return model
+        return model, score
 
     def build_random_forest_regression_model(self, target):
         # Divide financials into target and predictors
