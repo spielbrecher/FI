@@ -65,5 +65,5 @@ class Company:
                 'ticker': self.ticker,
                 'financials': self.financials_excel}
 
-        with open(filename,'w') as file:
+        with open(filename, 'w') as file:
             json.dump(data, file)

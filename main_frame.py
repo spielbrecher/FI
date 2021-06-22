@@ -1,4 +1,4 @@
-from tkinter import Tk, RIGHT, BOTH, RAISED, messagebox, Label, Entry, StringVar
+from tkinter import Tk, LEFT, RIGHT, BOTH, RAISED, messagebox, Label, Entry, StringVar
 import tkinter
 from tkinter.ttk import Frame, Button, Style
 from pandastable import Table, TableModel
@@ -9,6 +9,7 @@ import os
 
 import model_generator
 import prognosis_frame
+import add_company_frame
 
 
 class MainFrame(Tk):
@@ -41,6 +42,8 @@ class MainFrame(Tk):
         self.l2.pack(side=RIGHT)
         self.entry_from.pack(side=RIGHT, padx=5)
         self.l1.pack(side=RIGHT)
+        self.newCompanyButton = Button(self, text="Новая компания", command=self.newCompany)
+        self.newCompanyButton.pack(side=LEFT, padx=5)
 
 
     def initUI(self):
@@ -93,6 +96,10 @@ class MainFrame(Tk):
         features, predictions = modelgen.predict(self.mycompany.get_price_model(), fin, years)
         print(features)
         prognosis_frame.PrognosisFrame(self, predictions, years)
+
+    def newCompany(self):
+        add_company_frame.AddCompanyFrame(self)
+
 
 
 
