@@ -7,6 +7,7 @@ import company
 from tkinter.filedialog import askopenfilename
 import os
 
+import correlation_frame
 import model_generator
 import prognosis_frame
 import add_company_frame
@@ -44,6 +45,8 @@ class MainFrame(Tk):
         self.l1.pack(side=RIGHT)
         self.newCompanyButton = Button(self, text="Новая компания", command=self.newCompany)
         self.newCompanyButton.pack(side=LEFT, padx=5)
+        self.correlationButton = Button(self, text="Корреляции", command=self.correlation)
+        self.correlationButton.pack(side=LEFT, padx=5)
 
 
     def initUI(self):
@@ -99,6 +102,9 @@ class MainFrame(Tk):
 
     def newCompany(self):
         add_company_frame.AddCompanyFrame(self)
+
+    def correlation(self):
+        correlation_frame.CorrelationFrame(self, self.df)
 
 
 

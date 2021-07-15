@@ -23,7 +23,7 @@ class AddCompanyFrame(tkinter.Toplevel):
         self.entry_name = Entry(self.frame_name, width=25, textvariable=StringVar(self, 'New Company Name'))
         self.l_ticker = Label(self.frame_ticker, text="Company Ticker")
         self.entry_ticker = Entry(self.frame_ticker, width=25, textvariable=StringVar(self, 'ABCD'))
-        self.l_financials = Label(self.frame_financials, text="Company Name")
+        self.l_financials = Label(self.frame_financials, text="Файл финансовых данных")
         self.entry_financials = Entry(self.frame_financials, width=25, textvariable=StringVar(self, ''))
         self.btn_open = Button(self.frame_financials, text="Open Excel file", command=self.open_file)
         self.btn_save_company = Button(self.frame_controls, text="Save Company", command=self.save_company)
