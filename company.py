@@ -11,7 +11,8 @@ class Company:
         self.financials = pd.DataFrame()
         self.financials_excel = ''  # Path to excel file
         self.models = []  # Прогностические модели. Список моделей для каждого показателя
-        self.price_model: LinearRegression
+        self.price_model = None  # Linear, RandomForest or MLP
+        self.scaled_financials = pd.DataFrame()  # Scaled with StandardScaler financial data for MLP
 
     def set_company_name(self, company_name):
         self.company_name = company_name
@@ -28,7 +29,7 @@ class Company:
     def set_models(self, models: pd.DataFrame):
         self.models = models
 
-    def set_price_model(self, model: LinearRegression):
+    def set_price_model(self, model):
         self.price_model = model
 
     def add_model(self, model):

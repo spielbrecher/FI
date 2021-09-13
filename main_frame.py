@@ -1,6 +1,6 @@
 from tkinter import Tk, LEFT, RIGHT, BOTH, RAISED, messagebox, Label, Entry, StringVar
 import tkinter
-from tkinter.ttk import Frame, Button, Style
+from tkinter.ttk import Frame, Button, Style, Combobox
 from pandastable import Table, TableModel
 import pandas as pd
 import company
@@ -12,21 +12,34 @@ import model_generator
 import prognosis_frame
 import add_company_frame
 
+from sklearn.preprocessing import StandardScaler
 
 class MainFrame(Tk):
     def __init__(self):
         super().__init__()
-        #  Create DataFrame
+        #  Create DataFrame with financials at the North of the window
         self.df = pd.DataFrame({'': ['']})
         self.frame = Frame(self, relief=RAISED, borderwidth=1)
         self.table = Table(self.frame, dataframe=self.df,
                            showtoolbar=True, showstatusbar=True)
-        #self.parent = parent
+
+        # Link to the company for analysis
         self.mycompany = company.Company()
+
+        # Model generator
+        self.modelgen = model_generator.ModelGenerator()
+
+        # Initialize the user interface
         self.initUI()
         self.style = Style()
+
+        # Just printing in console list of available styles
         print(self.style.theme_names())
+
+        # By default - windows native style
         self.style.theme_use('winnative')
+
+        # Create buttons at South of the frame
         self.closeButton = Button(self, text="Закрыть", command=self.quit)
         self.closeButton.pack(side=RIGHT, padx=5, pady=5)
         self.loadButton = Button(self, text="Загрузить", command=self.loadCompany)
@@ -43,6 +56,10 @@ class MainFrame(Tk):
         self.l2.pack(side=RIGHT)
         self.entry_from.pack(side=RIGHT, padx=5)
         self.l1.pack(side=RIGHT)
+        # List of accessible models for price prognosis
+        self.combo_model_type = Combobox(self, values=["Linear", "Random Forest", "MLP"])
+        self.combo_model_type.current(0) # Linear by default
+        self.combo_model_type.pack(side=RIGHT)
         self.newCompanyButton = Button(self, text="Новая компания", command=self.newCompany)
         self.newCompanyButton.pack(side=LEFT, padx=5)
         self.correlationButton = Button(self, text="Корреляции", command=self.correlation)
@@ -51,12 +68,11 @@ class MainFrame(Tk):
 
     def initUI(self):
         self.title("Fluger Investor 1.00 2021")
-        #self.pack(fill=BOTH, expand=1)
         self.centerWindow()
         self.frame.pack(fill=BOTH, expand=True)
-        #  Специальная таблица для DataFrame
+        # Special table for DataFrame
         self.table.show()
-        #self.pack(fill=BOTH, expand=True)
+
 
     def centerWindow(self):
         w = 1200
@@ -83,20 +99,36 @@ class MainFrame(Tk):
         self.title("Fluger Investor 1.00 2021 - "+self.mycompany.ticker)
 
     def createModel(self):
-        modelgen = model_generator.ModelGenerator()
-        modelgen.set_financials(self.mycompany.get_financials())
-        model, score = modelgen.build_linear_regression_model('Price')
-        self.mycompany.set_price_model(model)
-        messagebox.showinfo("Модель", "Модель создана, score = "+str(score))
+        #modelgen = model_generator.ModelGenerator()
+        self.modelgen.set_financials(self.mycompany.get_financials())
+        # Get the type of model needed
+        model_type = self.combo_model_type.get()
+        # Create model according to choice
+        if (model_type=="Linear"):
+            model, score = self.modelgen.build_linear_regression_model('Price')
+            messagebox.showinfo("Модель", "Линейная модель создана, score = " + str(score))
+            self.mycompany.set_price_model(model)
+        elif (model_type=="Random Forest"):
+            model, score = self.modelgen.build_random_forest_regression_model('Price')
+            messagebox.showinfo("Модель", "Random Forest модель создана, score = " + str(score))
+            self.mycompany.set_price_model(model)
+        elif (model_type=="MLP"):
+            model, score = self.modelgen.build_mlp_model('Price')
+            messagebox.showinfo("Модель", "Модель многослойного перцептрона создана, score = " + str(score))
+            self.mycompany.set_price_model(model)
 
     def prognosis(self):
+        # Years from form fields From and To
         f = self.entry_from.get()
         t = self.entry_to.get()
         years = [i for i in range(int(f), int(t))]
         fin = self.mycompany.get_financials()
         fin = fin.drop(["Price"], axis=1)
-        modelgen = model_generator.ModelGenerator()
-        features, predictions = modelgen.predict(self.mycompany.get_price_model(), fin, years)
+        #modelgen = model_generator.ModelGenerator()
+        features, predictions = self.modelgen.predict(self.mycompany.get_price_model(), fin, years)
+
+        print("-- prediction --")
+        print(predictions)
         print(features)
         prognosis_frame.PrognosisFrame(self, predictions, years)
 
